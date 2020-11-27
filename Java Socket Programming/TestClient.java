@@ -1,40 +1,35 @@
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class TestClient {
 
 	public static void main(String args[]) throws UnknownHostException, IOException {
 		int port = 7004;
 		InetAddress host = InetAddress.getByName("localhost");
-		Socket connection = new Socket(host, port);
-		System.out.println("connection successful to" + connection.getRemoteSocketAddress());
+		try (Socket connection = new Socket(host, port);
 
-		PrintWriter output = new PrintWriter(connection.getOutputStream(), true);
-		BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				PrintWriter output = new PrintWriter(connection.getOutputStream(), true);
+				BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				Scanner sc = new Scanner(System.in);) {
+			String u = "";
+			String message = "";
+			System.out.println("Enter hyour message \n");
+			while ((message = sc.next()) != "quit") {
 
-		while (true) {
-			System.out.println("Writing to the server");
-			output.println("hello from " + connection.getLocalSocketAddress() + " \n");
-			System.out.println("Wrote to the server");
+				output.println(message);
+				// output.flush();
+				u = input.readLine();
+				System.out.println("Server sent " + u);
 
-			String i = input.readLine();
-
-			System.out.println("Server sent " + i);
-			output.flush();
+			}
 			output.println("GoodBye!");
-			break;
-
 		}
-		output.close();
-		connection.close();
-		input.close();
 
 	}
 
